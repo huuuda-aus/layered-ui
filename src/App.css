@@ -13,8 +13,8 @@
   height: 100vh;
   position: relative;
 
-  perspective: 1750px;
-  perspective-origin: 50% 45%;
+  perspective: 3000px;
+  perspective-origin: 50% 50%;
 }
 
 .layer {
@@ -47,7 +47,8 @@
 .scene.is-transitioning .layer {
   transition:
     transform 500ms linear,
-    filter 500ms linear;
+    filter 500ms linear,
+    opacity 500ms linear;
 }
 
 .scene.is-transitioning .layer.is-outgoing {
