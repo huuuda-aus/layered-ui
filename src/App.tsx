@@ -181,7 +181,7 @@ function App() {
           const isIncoming = incomingIndex !== null && index === incomingIndex
 
           const layerZ = -200 * index
-          const outgoingOffset = isOutgoing ? (motionDirection === 1 ? 400 : -400) : 0
+          const outgoingOffset = isOutgoing && motionDirection === 1 ? 400 : 0
           const effectiveZ = layerZ + outgoingOffset + cameraZ
           const isBehindCamera = effectiveZ > 0
 

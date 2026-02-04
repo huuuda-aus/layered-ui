@@ -46,16 +46,16 @@
 
 .scene.is-transitioning .layer {
   transition:
-    transform 500ms linear,
-    filter 500ms linear,
-    opacity 500ms linear;
+    transform 500ms ease-out,
+    filter 500ms ease-out,
+    opacity 500ms ease-out;
 }
 
 .scene.is-transitioning .layer.is-outgoing {
   transition:
-    transform 500ms linear,
-    filter 500ms linear,
-    opacity 500ms linear;
+    transform 500ms ease-out,
+    filter 500ms ease-out,
+    opacity 500ms ease-out;
 }
 
 .layer:focus-visible {
