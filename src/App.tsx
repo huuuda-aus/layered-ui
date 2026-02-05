@@ -102,10 +102,14 @@ function App() {
   const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null)
   const [incomingIndex, setIncomingIndex] = useState<number | null>(null)
   const [incomingPhase, setIncomingPhase] = useState<0 | 1>(1)
+  const [outgoingPhase, setOutgoingPhase] = useState<0 | 1>(1)
   const [isAnimating, setIsAnimating] = useState(false)
   const [motionDirection, setMotionDirection] = useState<1 | -1>(1)
+  const [transitionT, setTransitionT] = useState<number | null>(null)
   const timeoutRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
+  const transitionRafRef = useRef<number | null>(null)
+  const transitionT0Ref = useRef<number | null>(null)
 
   useEffect(() => {
     return () => {
@@ -114,6 +118,9 @@ function App() {
       }
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current)
+      }
+      if (transitionRafRef.current !== null) {
+        window.cancelAnimationFrame(transitionRafRef.current)
       }
     }
   }, [])
@@ -127,24 +134,51 @@ function App() {
 
     setIsAnimating(true)
     setOutgoingIndex(activeIndex)
+    setOutgoingPhase(0)
     setMotionDirection(direction)
 
     if (direction === -1) {
       setIncomingIndex(nextIndex)
       setIncomingPhase(0)
 
-      if (rafRef.current !== null) {
-        window.cancelAnimationFrame(rafRef.current)
+      if (transitionRafRef.current !== null) {
+        window.cancelAnimationFrame(transitionRafRef.current)
       }
 
-      rafRef.current = window.requestAnimationFrame(() => {
-        setIncomingPhase(1)
-        rafRef.current = null
-      })
+      transitionT0Ref.current = performance.now()
+      setTransitionT(0)
+
+      const tick = (now: number) => {
+        const t0 = transitionT0Ref.current
+        if (t0 === null) return
+        const t = clamp01((now - t0) / TRANSITION_MS)
+        setTransitionT(t)
+        if (t < 1) {
+          transitionRafRef.current = window.requestAnimationFrame(tick)
+          return
+        }
+
+        transitionRafRef.current = null
+      }
+
+      transitionRafRef.current = window.requestAnimationFrame(tick)
     } else {
       setIncomingIndex(null)
       setIncomingPhase(1)
+      setTransitionT(null)
     }
+
+    if (rafRef.current !== null) {
+      window.cancelAnimationFrame(rafRef.current)
+    }
+
+    rafRef.current = window.requestAnimationFrame(() => {
+      setOutgoingPhase(1)
+      if (direction === -1) {
+        setIncomingPhase(1)
+      }
+      rafRef.current = null
+    })
 
     setActiveIndex(nextIndex)
 
@@ -157,7 +191,14 @@ function App() {
       setOutgoingIndex(null)
       setIncomingIndex(null)
       setIncomingPhase(1)
+      setOutgoingPhase(1)
       setMotionDirection(1)
+      setTransitionT(null)
+      transitionT0Ref.current = null
+      if (transitionRafRef.current !== null) {
+        window.cancelAnimationFrame(transitionRafRef.current)
+        transitionRafRef.current = null
+      }
       timeoutRef.current = null
     }, TRANSITION_MS + 50)
   }
@@ -189,22 +230,24 @@ function App() {
             return null
           }
 
-          const opacity =
-            isOutgoing && isAnimating
-              ? 0
-              : isIncoming && isAnimating && motionDirection === -1
-                ? incomingPhase === 0
-                  ? 0
-                  : 1
-                : 1
+          const depthOpacity = lerpDepth(depth, 1, 0.7, 0.45)
+          const baseOpacity = index === activeIndex ? 1 : depthOpacity
+          const reverseT = transitionT ?? (incomingPhase === 0 ? 0 : 1)
+          const opacity = isOutgoing && isAnimating
+            ? motionDirection === -1
+              ? 1 - (1 - depthOpacity) * reverseT
+              : outgoingPhase === 0
+                ? 1
+                : 0
+            : isIncoming && isAnimating && motionDirection === -1
+              ? reverseT
+              : baseOpacity
 
           const blurPx = lerpDepth(depth, 0, 6, 10)
           const incomingBlurPx = 10
           const finalBlurPx =
             isIncoming && isAnimating && motionDirection === -1
-              ? incomingPhase === 0
-                ? incomingBlurPx
-                : 0
+              ? lerp(incomingBlurPx, 0, reverseT)
               : blurPx
           const stack = 10000 - Math.round(depth * 10) + (isOutgoing ? 1000 : 0)
 
