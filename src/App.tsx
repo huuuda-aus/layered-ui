@@ -105,11 +105,8 @@ function App() {
   const [outgoingPhase, setOutgoingPhase] = useState<0 | 1>(1)
   const [isAnimating, setIsAnimating] = useState(false)
   const [motionDirection, setMotionDirection] = useState<1 | -1>(1)
-  const [transitionT, setTransitionT] = useState<number | null>(null)
   const timeoutRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
-  const transitionRafRef = useRef<number | null>(null)
-  const transitionT0Ref = useRef<number | null>(null)
 
   useEffect(() => {
     return () => {
@@ -118,9 +115,6 @@ function App() {
       }
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current)
-      }
-      if (transitionRafRef.current !== null) {
-        window.cancelAnimationFrame(transitionRafRef.current)
       }
     }
   }, [])
@@ -140,33 +134,12 @@ function App() {
     if (direction === -1) {
       setIncomingIndex(nextIndex)
       setIncomingPhase(0)
-
-      if (transitionRafRef.current !== null) {
-        window.cancelAnimationFrame(transitionRafRef.current)
-      }
-
-      transitionT0Ref.current = performance.now()
-      setTransitionT(0)
-
-      const tick = (now: number) => {
-        const t0 = transitionT0Ref.current
-        if (t0 === null) return
-        const t = clamp01((now - t0) / TRANSITION_MS)
-        setTransitionT(t)
-        if (t < 1) {
-          transitionRafRef.current = window.requestAnimationFrame(tick)
-          return
-        }
-
-        transitionRafRef.current = null
-      }
-
-      transitionRafRef.current = window.requestAnimationFrame(tick)
     } else {
       setIncomingIndex(null)
       setIncomingPhase(1)
-      setTransitionT(null)
     }
+
+    setActiveIndex(nextIndex)
 
     if (rafRef.current !== null) {
       window.cancelAnimationFrame(rafRef.current)
@@ -180,8 +153,6 @@ function App() {
       rafRef.current = null
     })
 
-    setActiveIndex(nextIndex)
-
     if (timeoutRef.current !== null) {
       window.clearTimeout(timeoutRef.current)
     }
@@ -193,14 +164,8 @@ function App() {
       setIncomingPhase(1)
       setOutgoingPhase(1)
       setMotionDirection(1)
-      setTransitionT(null)
-      transitionT0Ref.current = null
-      if (transitionRafRef.current !== null) {
-        window.cancelAnimationFrame(transitionRafRef.current)
-        transitionRafRef.current = null
-      }
       timeoutRef.current = null
-    }, TRANSITION_MS + 50)
+    }, TRANSITION_MS + 120)
   }
 
   const goNext = () => goToIndex(activeIndex + 1)
@@ -217,6 +182,9 @@ function App() {
         style={{ ['--camera-z' as never]: `${cameraZ}px` }}
       >
         {layers.map((layer, index) => {
+          const LAYER_2_INDEX = 1
+          const MIN_VISIBLE_OPACITY = 0.2
+
           const depth = Math.abs(index - activeIndex)
           const isOutgoing = outgoingIndex !== null && index === outgoingIndex
           const isIncoming = incomingIndex !== null && index === incomingIndex
@@ -226,28 +194,45 @@ function App() {
           const effectiveZ = layerZ + outgoingOffset + cameraZ
           const isBehindCamera = effectiveZ > 0
 
-          if (isBehindCamera && !isOutgoing) {
+          const keepIncomingMountedWhileBehindCamera =
+            isIncoming && isAnimating && motionDirection === -1
+
+          const neverCull = index === LAYER_2_INDEX
+
+          if (isBehindCamera && !neverCull && !isOutgoing && !keepIncomingMountedWhileBehindCamera) {
             return null
           }
 
           const depthOpacity = lerpDepth(depth, 1, 0.7, 0.45)
           const baseOpacity = index === activeIndex ? 1 : depthOpacity
-          const reverseT = transitionT ?? (incomingPhase === 0 ? 0 : 1)
+          const reverseOutgoingTargetOpacity = MIN_VISIBLE_OPACITY
+          const forwardOutgoingTargetOpacity = MIN_VISIBLE_OPACITY
+
           const opacity = isOutgoing && isAnimating
             ? motionDirection === -1
-              ? 1 - (1 - depthOpacity) * reverseT
-              : outgoingPhase === 0
+              ? outgoingPhase === 0
                 ? 1
-                : 0
+                : reverseOutgoingTargetOpacity
+              : outgoingPhase === 0
+                  ? 1
+                  : forwardOutgoingTargetOpacity
             : isIncoming && isAnimating && motionDirection === -1
-              ? reverseT
+              ? incomingPhase === 0
+                ? 0
+                : 1
               : baseOpacity
+
+          const clampedOpacity = index === LAYER_2_INDEX
+            ? Math.max(MIN_VISIBLE_OPACITY, opacity)
+            : opacity
 
           const blurPx = lerpDepth(depth, 0, 6, 10)
           const incomingBlurPx = 10
           const finalBlurPx =
             isIncoming && isAnimating && motionDirection === -1
-              ? lerp(incomingBlurPx, 0, reverseT)
+              ? incomingPhase === 0
+                ? incomingBlurPx
+                : 0
               : blurPx
           const stack = 10000 - Math.round(depth * 10) + (isOutgoing ? 1000 : 0)
 
@@ -260,7 +245,7 @@ function App() {
                 ['--outgoing-offset' as never]: `${outgoingOffset}px`,
                 ['--stack' as never]: stack,
                 ['--layer-blur' as never]: `${finalBlurPx}px`,
-                opacity,
+                opacity: clampedOpacity,
               }}
             >
               <div className="layerInner">

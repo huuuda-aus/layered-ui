@@ -48,14 +48,14 @@
   transition:
     transform 500ms ease-out,
     filter 500ms ease-out,
-    opacity 500ms ease-out;
+    opacity 450ms linear;
 }
 
 .scene.is-transitioning .layer.is-outgoing {
   transition:
     transform 500ms ease-out,
     filter 500ms ease-out,
-    opacity 500ms ease-out;
+    opacity 450ms linear;
 }
 
 .layer:focus-visible {
