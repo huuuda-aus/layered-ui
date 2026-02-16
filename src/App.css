@@ -1,177 +1,193 @@
-.app {
-  width: 100vw;
-  height: 100vh;
-  display: block;
-}
-
-.layer.is-outgoing {
-  pointer-events: none;
-}
-
-.scene {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-
-  perspective: 3000px;
-  perspective-origin: 50% 50%;
-}
-
-.layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-
-  z-index: var(--stack, 0);
-
-  opacity: 1;
-
-  border: 0;
-  padding: 0;
-  text-align: left;
-  color: #fff;
-  cursor: pointer;
-  background: none;
-
-  transform-style: preserve-3d;
-  transform: translateZ(calc(var(--z, 0px) + var(--camera-z, 0px) + var(--outgoing-offset, 0px)));
-  transform-origin: 50% 50%;
-  filter: blur(var(--layer-blur, 0px));
-
-  transition: none;
-
-  will-change: transform, filter;
-}
-
-.scene.is-transitioning .layer {
-  transition:
-    transform 500ms ease-out,
-    filter 500ms ease-out,
-    opacity 450ms linear;
-}
-
-.scene.is-transitioning .layer.is-outgoing {
-  transition:
-    transform 500ms ease-out,
-    filter 500ms ease-out,
-    opacity 450ms linear;
-}
-
-.layer:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 6px;
-}
-
-.layerInner {
-  height: 100%;
-  width: 100%;
-  border-radius: 18px;
-  box-shadow:
-    0 30px 80px #000,
-    0 12px 30px #000;
-
-  padding: 28px 30px;
-  box-sizing: border-box;
+.layerPanel {
   display: grid;
-  gap: 14px;
-  align-content: start;
-
-  transform: translateZ(0px);
-
-  position: relative;
-  overflow: hidden;
-}
-
-.layerInner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.25) 1px, rgba(255, 255, 255, 0) 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.25) 1px, rgba(255, 255, 255, 0) 1px);
-  background-size: 160px 80px;
-  background-position: 0 0;
-}
-
-.layerInner > * {
-  position: relative;
-  z-index: 1;
+  gap: 10px;
+  height: 100%;
+  color: #c9cdd6;
+  font-size: 12px;
 }
 
 .layerMeta {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  color: #9aa1b1;
+}
+
+.layerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .layerTitle {
-  margin: 6px 0 0 0;
-  font-size: 44px;
-  line-height: 1.05;
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+  color: #d6d9e0;
 }
 
 .layerSubtitle {
-  margin: 0;
-  font-size: 18px;
+  margin: 4px 0 0 0;
+  font-size: 11px;
+  color: #a4a9b6;
+}
+
+.layerBadge {
+  border: 1px solid rgba(160, 170, 190, 0.35);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c3c8d2;
+  background: rgba(15, 18, 28, 0.55);
+}
+
+.layerGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.layerCard {
+  border: 1px solid rgba(160, 170, 190, 0.2);
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(12, 14, 20, 0.65);
+  display: grid;
+  gap: 4px;
+}
+
+.layerCardLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8f97a8;
+}
+
+.layerCardValue {
+  font-size: 16px;
+  color: #d7dbe4;
   font-weight: 600;
 }
 
-.layerBody {
-  margin: 0;
-  max-width: 70ch;
-  font-size: 16px;
-  line-height: 1.6;
+.layerCardHint {
+  font-size: 10px;
+  color: #8b92a2;
 }
 
-.layerActions {
-  margin-top: 10px;
-  display: flex;
+.layerRow {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
   gap: 10px;
 }
 
-.advanceBtn {
-  appearance: none;
-  border: 1px solid #fff;
-  background: #000;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 600;
+.layerPanelBlock {
+  border: 1px solid rgba(160, 170, 190, 0.18);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(10, 12, 18, 0.6);
+  display: grid;
+  gap: 8px;
 }
 
-.advanceBtn:hover {
-  border-color: #fff;
+.layerSectionTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #a2a9b8;
 }
 
-.advanceBtn:disabled {
-  cursor: not-allowed;
+.layerChart {
+  width: 100%;
+  height: 120px;
 }
 
-.tone-navy .layerInner {
-  --bg-color: 6, 16, 40;
+.layerChart rect {
+  fill: rgba(8, 10, 14, 0.8);
+  stroke: rgba(150, 160, 180, 0.2);
 }
 
-.tone-brown .layerInner {
-  --bg-color: 40, 22, 10;
+.layerChartLine {
+  fill: none;
+  stroke: #c5c9d3;
+  stroke-width: 2;
 }
 
-.tone-maroon .layerInner {
-  --bg-color: 44, 10, 18;
+.layerChartDots circle {
+  fill: #c5c9d3;
 }
 
-.tone-navy .layerInner::before,
-.tone-brown .layerInner::before,
-.tone-maroon .layerInner::before {
-  background-color: rgba(var(--bg-color), 0.8);
-  background-blend-mode: normal;
+.layerChartGrid line {
+  stroke: rgba(170, 180, 200, 0.15);
+  stroke-dasharray: 4 6;
+}
+
+.layerTinyNote {
+  font-size: 10px;
+  color: #9097a6;
+}
+
+.layerImage {
+  width: 160px;
+  height: 160px;
+  justify-self: center;
+  border-radius: 12px;
+  background: rgba(10, 12, 18, 0.65);
+  border: 1px solid rgba(150, 160, 180, 0.2);
+  padding: 10px;
+}
+
+.layerList {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+  color: #9aa1b1;
+  font-size: 11px;
+}
+
+.layerTable {
+  display: grid;
+  gap: 6px;
+}
+
+.layerTableRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 0.6fr 0.8fr 0.7fr;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(9, 11, 16, 0.7);
+  border: 1px solid rgba(140, 150, 170, 0.18);
+  color: #b4bac6;
+  font-size: 11px;
+}
+
+.layerTableHead {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 10px;
+  color: #9da3b1;
+  background: rgba(12, 14, 20, 0.8);
+}
+
+.layerFootnote {
+  font-size: 10px;
+  color: #8a91a1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.layerPlaceholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 12px;
+  color: #8b92a2;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
 }
