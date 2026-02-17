@@ -1,6 +1,6 @@
 {
   "name": "perspective-layered-ui",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "type": "module",
   "description": "A React component for creating layered UI scenes with perspective effects",
   "main": "./dist/index.js",

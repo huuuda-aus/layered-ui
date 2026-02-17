@@ -31,7 +31,8 @@ export type LayeredSceneProps = {
 
 export type LayeredSceneRef = {
   goToPrev: () => void,
-  goToNext: () => void
+  goToNext: () => void,
+  goToFirst: () => void
 }
 
 export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
@@ -140,6 +141,8 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   }, [layers.length])
 
   useEffect(() => {
+    if (disableNavigationButtons) return
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'PageUp') {
         goToIndex(activeIndex - 1)
@@ -153,11 +156,12 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [activeIndex, goToIndex])
+  }, [disableNavigationButtons, activeIndex, goToIndex])
 
   useImperativeHandle(ref, () => ({
     goToPrev: () => goToIndex(activeIndex - 1),
     goToNext: () => goToIndex(activeIndex + 1),
+    goToFirst: () => goToIndex(0),
   }), [activeIndex, goToIndex])
 
   const isTransitioning = isAnimating
