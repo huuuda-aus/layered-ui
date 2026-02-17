@@ -1,37 +1,45 @@
 import {
   Children,
   type CSSProperties,
+  forwardRef,
   type ReactNode,
   isValidElement,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react'
 
 export type LayeredSceneProps = {
-  children: ReactNode
-  className?: string
-  style?: CSSProperties
-  transitionMs?: number
-  easing?: string
-  depthSpacingPx?: number
-  perspectivePx?: number
-  blurAt1Px?: number
-  blurAt2Px?: number
-  opacityAt1?: number
-  opacityAt2?: number
-  minVisibleOpacity?: number
-  initialIndex?: number
+  children: ReactNode,
+  className?: string,
+  style?: CSSProperties,
+  transitionMs?: number,
+  easing?: string,
+  depthSpacingPx?: number,
+  perspectivePx?: number,
+  blurAt1Px?: number,
+  blurAt2Px?: number,
+  opacityAt1?: number,
+  opacityAt2?: number,
+  minVisibleOpacity?: number,
+  initialIndex?: number,
+  disableNavigationButtons?: boolean
 }
 
-export function LayeredScene({
+export type LayeredSceneRef = {
+  goToPrev: () => void,
+  goToNext: () => void
+}
+
+export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   children,
   className,
   style,
   transitionMs = 250,
-  easing = 'ease-out',
+  easing = 'linear',
   depthSpacingPx = 200,
   perspectivePx = 3000,
   blurAt1Px = 6,
@@ -40,7 +48,8 @@ export function LayeredScene({
   opacityAt2 = 0.45,
   minVisibleOpacity = 0.2,
   initialIndex = 0,
-}: LayeredSceneProps) {
+  disableNavigationButtons = false,
+}, ref) => {
   const layers = useMemo(() => Children.toArray(children), [children])
 
   const clamp01 = (n: number) => Math.max(0, Math.min(1, n))
@@ -146,6 +155,11 @@ export function LayeredScene({
     }
   }, [activeIndex, goToIndex])
 
+  useImperativeHandle(ref, () => ({
+    goToPrev: () => goToIndex(activeIndex - 1),
+    goToNext: () => goToIndex(activeIndex + 1),
+  }), [activeIndex, goToIndex])
+
   const isTransitioning = isAnimating
   const cameraZ = depthSpacingPx * activeIndex
 
@@ -228,7 +242,7 @@ export function LayeredScene({
             <div className="layeredLayerInner">
               {content}
               <div className="layeredControls">
-                {index !== 0 ? (
+                {!disableNavigationButtons && index !== 0 ? (
                   <button
                     type="button"
                     className="layeredBtn"
@@ -238,7 +252,7 @@ export function LayeredScene({
                     Previous
                   </button>
                 ) : null}
-                {index !== layers.length - 1 ? (
+                {!disableNavigationButtons && index !== layers.length - 1 ? (
                   <button
                     type="button"
                     className="layeredBtn"
@@ -255,10 +269,10 @@ export function LayeredScene({
       })}
     </div>
   )
-}
+})
 
-export type LayerProps = {
-  children: ReactNode
+export interface LayerProps {
+  children: ReactNode;
 }
 
 export function Layer({ children }: LayerProps) {

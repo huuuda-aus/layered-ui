@@ -36,21 +36,15 @@ function App() {
 
 ## Props
 
-The `LayeredScene` component accepts the following props:
-
-- `children`: `ReactNode` - The layers to display (each child is a layer).
-- `className?`: `string` - Additional CSS class for the container.
-- `style?`: `CSSProperties` - Inline styles for the container.
-- `transitionMs?`: `number` - Transition duration in milliseconds (default: 250).
-- `easing?`: `string` - CSS easing function (default: 'ease-out').
-- `depthSpacingPx?`: `number` - Z-axis spacing between layers (default: 200).
-- `perspectivePx?`: `number` - Perspective value for the 3D effect (default: 3000).
-- `blurAt1Px?`: `number` - Blur amount for layers at distance 1 (default: 6).
-- `blurAt2Px?`: `number` - Blur amount for layers at distance 2 (default: 10).
-- `opacityAt1?`: `number` - Opacity for layers at distance 1 (default: 0.7).
-- `opacityAt2?`: `number` - Opacity for layers at distance 2 (default: 0.45).
-- `minVisibleOpacity?`: `number` - Minimum opacity for visible layers (default: 0.2).
-- `initialIndex?`: `number` - Initial active layer index (default: 0).
+- `transitionMs`: Duration of navigation transitions in milliseconds (default: 250).
+- `easing`: CSS easing function for transitions (default: 'linear').
+- `depthSpacingPx`: Z-axis spacing between layers in pixels (default: 200).
+- `perspectivePx`: Perspective value for 3D effect in pixels (default: 3000).
+- `blurAt1Px`, `blurAt2Px`: Blur amounts for layers at increasing distances (defaults: 6, 10).
+- `opacityAt1`, `opacityAt2`: Opacity values for layers at increasing distances (defaults: 0.7, 0.45).
+- `minVisibleOpacity`: Minimum opacity for visible layers (default: 0.2).
+- `initialIndex`: Starting layer index (default: 0).
+- `disableNavigationButtons`: Disables automatic PREV/NEXT buttons (default: false).
 
 ## Features
 

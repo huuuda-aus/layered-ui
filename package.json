@@ -1,6 +1,6 @@
 {
   "name": "perspective-layered-ui",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "type": "module",
   "description": "A React component for creating layered UI scenes with perspective effects",
   "main": "./dist/index.js",
@@ -8,9 +8,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.es.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./dist/perspective-layered-ui.css": "./dist/perspective-layered-ui.css",
     "./dist/index.d.ts": "./dist/index.d.ts"
