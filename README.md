@@ -1,29 +1,65 @@
-# Layered UI Prototype (3D Perspective)
+# perspective-layered-ui
 
-Prototype UI that explores stacking full-screen layers in 3D space using CSS `perspective` + `translateZ`, and transitioning between layers by moving a "camera" along the Z axis.
+A React component library for creating interactive layered UI scenes with 3D perspective effects. Stack full-screen layers and navigate between them with smooth transitions.
 
-## Run
+## Installation
 
 ```bash
-npm install
-npm run dev
+npm install perspective-layered-ui
 ```
 
-Then open the printed local URL.
+## Usage
 
-## Controls
+First, import the component and the required CSS:
 
-- **Next layer**: moves the camera forward to the next layer.
-- **Previous layer**: moves the camera backward to the previous layer.
-- The **last** layer does not show the Next button.
+```tsx
+import { LayeredScene } from 'perspective-layered-ui';
+import 'perspective-layered-ui/dist/perspective-layered-ui.css';
+```
 
-## Implementation notes
+Then use it in your React app:
 
-- **Rendering**: layers are absolutely positioned and transformed in Z.
-- **Camera**: the camera position is applied as a CSS variable (`--camera-z`).
-- **Transitions**: CSS transitions animate `transform` / `filter` / `opacity` during navigation.
+```tsx
+import { LayeredScene } from 'perspective-layered-ui';
+import 'perspective-layered-ui/dist/perspective-layered-ui.css';
 
-Key files:
+function App() {
+  return (
+    <LayeredScene>
+      <div style={{ background: 'red', height: '100vh' }}>Layer 1</div>
+      <div style={{ background: 'green', height: '100vh' }}>Layer 2</div>
+      <div style={{ background: 'blue', height: '100vh' }}>Layer 3</div>
+    </LayeredScene>
+  );
+}
+```
 
-- `src/App.tsx`
-- `src/App.css`
+## Props
+
+The `LayeredScene` component accepts the following props:
+
+- `children`: `ReactNode` - The layers to display (each child is a layer).
+- `className?`: `string` - Additional CSS class for the container.
+- `style?`: `CSSProperties` - Inline styles for the container.
+- `transitionMs?`: `number` - Transition duration in milliseconds (default: 250).
+- `easing?`: `string` - CSS easing function (default: 'ease-out').
+- `depthSpacingPx?`: `number` - Z-axis spacing between layers (default: 200).
+- `perspectivePx?`: `number` - Perspective value for the 3D effect (default: 3000).
+- `blurAt1Px?`: `number` - Blur amount for layers at distance 1 (default: 6).
+- `blurAt2Px?`: `number` - Blur amount for layers at distance 2 (default: 10).
+- `opacityAt1?`: `number` - Opacity for layers at distance 1 (default: 0.7).
+- `opacityAt2?`: `number` - Opacity for layers at distance 2 (default: 0.45).
+- `minVisibleOpacity?`: `number` - Minimum opacity for visible layers (default: 0.2).
+- `initialIndex?`: `number` - Initial active layer index (default: 0).
+
+## Features
+
+- Smooth 3D transitions between layers
+- Customizable perspective and depth
+- Blur and opacity effects for depth perception
+- Keyboard and programmatic navigation
+- Lightweight and dependency-free (requires React)
+
+## License
+
+MIT

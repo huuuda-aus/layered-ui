@@ -1,11 +1,32 @@
 {
-  "name": "layered-ui",
-  "private": true,
-  "version": "0.0.0",
+  "name": "perspective-layered-ui",
+  "version": "1.0.1",
   "type": "module",
+  "description": "A React component for creating layered UI scenes with perspective effects",
+  "main": "./dist/index.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "ui",
+    "perspective",
+    "layered",
+    "component"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && tsc --project tsconfig.lib.json",
     "lint": "eslint .",
     "preview": "vite preview"
   },

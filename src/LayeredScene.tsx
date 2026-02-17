@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from 'react'
-import './LayeredScene.css'
 
 export type LayeredSceneProps = {
   children: ReactNode
