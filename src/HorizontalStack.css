@@ -1,0 +1,151 @@
+.horizontalStackRoot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 16px;
+  padding-top: 48px;
+}
+
+.horizontalStackViewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.horizontalStackTrack {
+  display: flex;
+  gap: var(--horizontal-stack-gap, 24px);
+  will-change: transform;
+  transition: transform 750ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.horizontalStackTrack::after {
+  content: '';
+  flex: 0 0 var(--horizontal-stack-gap, 24px);
+}
+
+.horizontalStackSlide {
+  flex: 0 0 var(--horizontal-stack-span, 100%);
+  width: var(--horizontal-stack-span, 100%);
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0.55;
+  transform: translateZ(-30px) scale(0.92);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+.horizontalStackSlideInner {
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  display: block;
+  user-select: none;
+}
+
+.horizontalStackSlide.is-active {
+  opacity: 1;
+  transform: translateZ(0) scale(1);
+  pointer-events: auto;
+}
+
+.horizontalStackSlide.is-active .horizontalStackSlideInner {
+  transform: translateZ(0);
+  filter: none;
+}
+
+.horizontalStackIndicators {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  justify-items: center;
+  padding: 12px 20px;
+  pointer-events: none;
+}
+
+.horizontalStackControlBtn {
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: inherit;
+  border-radius: 999px;
+  padding: 10px 22px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.horizontalStackControlBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.horizontalStackControlBtn:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.horizontalStackChevron {
+  pointer-events: auto;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #fff;
+  opacity: 0.85;
+  transition: transform 200ms ease, opacity 200ms ease;
+  grid-column: 1 / 2;
+}
+
+.horizontalStackChevron.is-disabled {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.horizontalStackChevron:hover:not(.is-disabled) {
+  transform: translateY(-2px);
+}
+
+.horizontalStackChevron span {
+  line-height: 0;
+}
+
+.horizontalStackChevron.left {
+  grid-column: 1;
+}
+
+.horizontalStackChevron.right {
+  grid-column: 3;
+}
+
+.horizontalStackDots {
+  grid-column: 2;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.horizontalStackDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  opacity: 0.6;
+  transition: opacity 200ms ease, background 200ms ease;
+}
+
+.horizontalStackDot.is-active {
+  background: #fff;
+  opacity: 1;
+}

@@ -38,6 +38,38 @@ function App() {
 }
 ```
 
+## HorizontalStack
+
+`HorizontalStack` lets you add a carousel-style pane inside any layer. Each `Slide` fills the layer width and can be scrolled horizontally, while the `gap` prop controls spacing between slides and the imperative ref exposes `goToPrev`, `goToNext`, and `goToIndex` for custom controls.
+
+```tsx
+import { HorizontalStack, Slide } from 'perspective-layered-ui';
+import 'perspective-layered-ui/dist/perspective-layered-ui.css';
+import { useRef } from 'react';
+
+function CarouselLayer() {
+  const carouselRef = useRef<HorizontalStackRef>(null);
+
+  return (
+    <HorizontalStack ref={carouselRef} gap={32}>
+      <Slide>First view</Slide>
+      <Slide>Second view</Slide>
+      <Slide>Third view</Slide>
+    </HorizontalStack>
+  );
+}
+
+function App() {
+  return (
+    <LayeredScene>
+      <Layer>
+        <CarouselLayer />
+      </Layer>
+    </LayeredScene>
+  );
+}
+```
+
 ## Props
 
 - `transitionMs`: Duration of navigation transitions in milliseconds (default: 250).
