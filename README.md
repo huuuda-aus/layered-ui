@@ -2,6 +2,8 @@
 
 A React component library for creating interactive layered UI scenes with 3D perspective effects. Stack full-screen layers and navigate between them with smooth transitions.
 
+[![npm version](https://img.shields.io/npm/v/perspective-layered-ui.svg)](https://www.npmjs.com/package/perspective-layered-ui)
+
 ## Installation
 
 ```bash
