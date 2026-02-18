@@ -1,4 +1,4 @@
 import './LayeredScene.css'
 
-export { LayeredScene } from './LayeredScene'
-export type { LayeredSceneProps, LayeredSceneRef } from './LayeredScene'
+export { LayeredScene, Layer } from './LayeredScene'
+export type { LayeredSceneProps, LayeredSceneRef, LayerProps } from './LayeredScene'
