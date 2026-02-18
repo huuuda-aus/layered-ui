@@ -1,3 +1,5 @@
+import './LayeredScene.css'
+
 import {
   Children,
   type CSSProperties,
