@@ -191,3 +191,65 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
 }
+
+.horizontalStackWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.horizontalStack {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.horizontalStackTrack {
+  width: 100%;
+}
+
+.horizontalStackSlide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  transition:
+    transform var(--horizontal-stack-transition-ms, 600ms) var(--horizontal-stack-transition-easing, cubic-bezier(0.23, 1, 0.32, 1)),
+    opacity var(--horizontal-stack-transition-ms, 600ms) linear;
+  transform-origin: var(--horizontal-stack-rotation-origin, center center);
+  will-change: transform, opacity;
+}
+
+.horizontalStackSlide[data-slide-position="prev"] {
+  transform: rotateY(35deg) translateZ(-200px);
+  opacity: 0.5;
+  transform-origin: center right;
+}
+
+.horizontalStackSlide[data-slide-position="next"] {
+  transform: rotateY(-35deg) translateZ(-200px);
+  opacity: 0.5;
+  transform-origin: center left;
+}
+
+.horizontalStackSlide[data-slide-position="active"] {
+  transform: rotateY(0deg) translateZ(0px);
+  opacity: 1;
+}
+
+.horizontalStackSlide:not([data-slide-position]) {
+  opacity: 0;
+}
+
+.horizontalNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.horizontalNavLabel {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9aa1b1;
+}

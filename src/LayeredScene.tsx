@@ -144,9 +144,9 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
     if (disableNavigationButtons) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'PageUp') {
+      if (event.key === 'ArrowUp') {
         goToIndex(activeIndex - 1)
-      } else if (event.key === 'PageDown') {
+      } else if (event.key === 'ArrowDown') {
         goToIndex(activeIndex + 1)
       }
     }

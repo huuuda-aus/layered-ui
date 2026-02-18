@@ -1,8 +1,34 @@
+import { useEffect, useRef, useState } from 'react'
 import { Layer, LayeredScene } from './LayeredScene'
+import { HorizontalStack, type HorizontalStackRef } from './HorizontalStack'
+import './LayeredScene.css'
 import './App.css'
 
 function App() {
   const transitionMs = 250
+  const controlStackRef = useRef<HorizontalStackRef>(null)
+  const [controlSlideIndex, setControlSlideIndex] = useState(0)
+  const controlSlideCount = 2
+
+  const handleControlPrevSlide = () => controlStackRef.current?.goToPrevSlide()
+  const handleControlNextSlide = () => controlStackRef.current?.goToNextSlide()
+
+  useEffect(() => {
+    const handleSlideKey = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        if (controlSlideIndex > 0) {
+          controlStackRef.current?.goToPrevSlide()
+        }
+      } else if (event.key === 'ArrowRight') {
+        if (controlSlideIndex < controlSlideCount - 1) {
+          controlStackRef.current?.goToNextSlide()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleSlideKey)
+    return () => window.removeEventListener('keydown', handleSlideKey)
+  }, [controlSlideIndex, controlSlideCount])
 
   return (
     <LayeredScene transitionMs={transitionMs}>
@@ -136,43 +162,48 @@ function App() {
         </div>
       </Layer>
       <Layer>
-        <div className="layerPanel">
-          <div className="layerMeta">
-            <div>Quantum Control Plane</div>
-            <div>Layer 02 / Secondary Focus</div>
-          </div>
-          <div className="layerHeader">
-            <div>
-              <h2 className="layerTitle">Pulse Scheduling + Crosstalk Map</h2>
-              <p className="layerSubtitle">Adaptive calibration sweep · 18 min window · 5.2 kHz control loop</p>
+        <HorizontalStack
+          ref={controlStackRef}
+          gap={100}
+          transitionMs={3000}
+          onSlideChange={setControlSlideIndex}
+        >
+          <article className="layerPanel">
+            <div className="layerMeta">
+              <div>Quantum Control Plane</div>
+              <div>Layer 02 / Secondary Focus</div>
             </div>
-            <div className="layerBadge">Sweep 18-B</div>
-          </div>
+            <div className="layerHeader">
+              <div>
+                <h2 className="layerTitle">Pulse Scheduling + Crosstalk Map</h2>
+                <p className="layerSubtitle">Adaptive calibration sweep · 18 min window · 5.2 kHz control loop</p>
+              </div>
+              <div className="layerBadge">Sweep 18-B</div>
+            </div>
 
-          <div className="layerGrid">
-            <div className="layerCard">
-              <div className="layerCardLabel">Active Channels</div>
-              <div className="layerCardValue">22 / 24</div>
-              <div className="layerCardHint">Two held for isolation</div>
+            <div className="layerGrid">
+              <div className="layerCard">
+                <div className="layerCardLabel">Active Channels</div>
+                <div className="layerCardValue">22 / 24</div>
+                <div className="layerCardHint">Two held for isolation</div>
+              </div>
+              <div className="layerCard">
+                <div className="layerCardLabel">Gate Queue</div>
+                <div className="layerCardValue">146 ops</div>
+                <div className="layerCardHint">Pending @ 1.8 ms</div>
+              </div>
+              <div className="layerCard">
+                <div className="layerCardLabel">Drive Drift</div>
+                <div className="layerCardValue">-0.13 MHz</div>
+                <div className="layerCardHint">Median detune</div>
+              </div>
+              <div className="layerCard">
+                <div className="layerCardLabel">Crosstalk</div>
+                <div className="layerCardValue">1.9%</div>
+                <div className="layerCardHint">Below 2.5% cap</div>
+              </div>
             </div>
-            <div className="layerCard">
-              <div className="layerCardLabel">Gate Queue</div>
-              <div className="layerCardValue">146 ops</div>
-              <div className="layerCardHint">Pending @ 1.8 ms</div>
-            </div>
-            <div className="layerCard">
-              <div className="layerCardLabel">Drive Drift</div>
-              <div className="layerCardValue">-0.13 MHz</div>
-              <div className="layerCardHint">Median detune</div>
-            </div>
-            <div className="layerCard">
-              <div className="layerCardLabel">Crosstalk</div>
-              <div className="layerCardValue">1.9%</div>
-              <div className="layerCardHint">Below 2.5% cap</div>
-            </div>
-          </div>
 
-          <div className="layerRow">
             <div className="layerPanelBlock">
               <div className="layerSectionTitle">Crosstalk Matrix (Δ)</div>
               <svg className="layerChart" viewBox="0 0 360 120" role="img" aria-label="Crosstalk heatmap">
@@ -211,66 +242,87 @@ function App() {
                 <li>Idle padding: 0.18 μs</li>
               </ul>
             </div>
-          </div>
-
-          <div className="layerPanelBlock">
-            <div className="layerSectionTitle">Calibration Notes</div>
-            <div className="layerTable">
-              <div className="layerTableRow layerTableHead">
-                <div>Step</div>
-                <div>Target</div>
-                <div>Δt</div>
-                <div>Shift</div>
-                <div>Status</div>
-              </div>
-              <div className="layerTableRow">
-                <div>Echo-12</div>
-                <div>Q2</div>
-                <div>0.46 μs</div>
-                <div>-0.02</div>
-                <div>OK</div>
-              </div>
-              <div className="layerTableRow">
-                <div>CR-211</div>
-                <div>Q4 → Q6</div>
-                <div>0.71 μs</div>
-                <div>+0.04</div>
-                <div>OK</div>
-              </div>
-              <div className="layerTableRow">
-                <div>ZZ-114</div>
-                <div>Q1 ↔ Q5</div>
-                <div>0.88 μs</div>
-                <div>+0.09</div>
-                <div>WARN</div>
-              </div>
-              <div className="layerTableRow">
-                <div>DR-402</div>
-                <div>Q7</div>
-                <div>0.31 μs</div>
-                <div>-0.01</div>
-                <div>OK</div>
-              </div>
-              <div className="layerTableRow">
-                <div>XY-009</div>
-                <div>Q3</div>
-                <div>0.25 μs</div>
-                <div>+0.02</div>
-                <div>OK</div>
+          </article>
+          <article className="layerPanel">
+            <div className="layerSectionTitle">Calibration + Feedback</div>
+            <div className="layerPanelBlock">
+              <div className="layerSectionTitle">Calibration Notes</div>
+              <div className="layerTable">
+                <div className="layerTableRow layerTableHead">
+                  <div>Step</div>
+                  <div>Target</div>
+                  <div>Δt</div>
+                  <div>Shift</div>
+                  <div>Status</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>Echo-12</div>
+                  <div>Q2</div>
+                  <div>0.46 μs</div>
+                  <div>-0.02</div>
+                  <div>OK</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>CR-211</div>
+                  <div>Q4 → Q6</div>
+                  <div>0.71 μs</div>
+                  <div>+0.04</div>
+                  <div>OK</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>ZZ-114</div>
+                  <div>Q1 ↔ Q5</div>
+                  <div>0.88 μs</div>
+                  <div>+0.09</div>
+                  <div>WARN</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>DR-402</div>
+                  <div>Q7</div>
+                  <div>0.31 μs</div>
+                  <div>-0.01</div>
+                  <div>OK</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>XY-009</div>
+                  <div>Q3</div>
+                  <div>0.25 μs</div>
+                  <div>+0.02</div>
+                  <div>OK</div>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="layerPanelBlock">
-            <div className="layerSectionTitle">Operator Log</div>
-            <div className="layerTinyNote">
-              Drift compensation applied at 21:18. Residual phase noise within 0.6°; recalc queued for Q5 after cryo stabilization.
+            <div className="layerPanelBlock">
+              <div className="layerSectionTitle">Operator Log</div>
+              <div className="layerTinyNote">
+                Drift compensation applied at 21:18. Residual phase noise within 0.6°; recalc queued for Q5 after cryo stabilization.
+              </div>
             </div>
+            <div className="layerFootnote">
+              Scheduler locked to 0.4 ns resolution · Guard bands active across couplers
+            </div>
+          </article>
+        </HorizontalStack>
+        <div className="horizontalNav">
+          <button
+            type="button"
+            className="layeredBtn"
+            onClick={handleControlPrevSlide}
+            disabled={controlSlideIndex === 0}
+          >
+            Previous slide
+          </button>
+          <div className="horizontalNavLabel">
+            Slide {controlSlideIndex + 1} / {controlSlideCount}
           </div>
-
-          <div className="layerFootnote">
-            Scheduler locked to 0.4 ns resolution · Guard bands active across couplers
-          </div>
+          <button
+            type="button"
+            className="layeredBtn"
+            onClick={handleControlNextSlide}
+            disabled={controlSlideIndex === controlSlideCount - 1}
+          >
+            Next slide
+          </button>
         </div>
       </Layer>
       <Layer>
