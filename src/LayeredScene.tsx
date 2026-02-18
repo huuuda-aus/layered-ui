@@ -4,6 +4,7 @@ import {
   Children,
   type CSSProperties,
   forwardRef,
+  type HTMLAttributes,
   type ReactNode,
   isValidElement,
   useCallback,
@@ -279,10 +280,14 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   )
 })
 
-export interface LayerProps {
+export interface LayerProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
-export function Layer({ children }: LayerProps) {
-  return <>{children}</>
-}
+export const Layer = forwardRef<HTMLDivElement, LayerProps>(function Layer({ children, ...rest }, ref) {
+  return (
+    <div ref={ref} {...rest}>
+      {children}
+    </div>
+  )
+})
