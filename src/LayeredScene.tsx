@@ -188,7 +188,8 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
 
         const layerZ = -depthSpacingPx * index
         const outgoingOffset = isOutgoing && motionDirection === 1 ? depthSpacingPx * 2 : 0
-        const effectiveZ = layerZ + outgoingOffset + cameraZ
+        const incomingEntranceOffset = isIncoming && motionDirection === -1 && incomingPhase === 0 ? depthSpacingPx * 2 : 0
+        const effectiveZ = layerZ + outgoingOffset + cameraZ + incomingEntranceOffset
         const isBehindCamera = effectiveZ > 0
 
         const keepIncomingMountedWhileBehindCamera =
@@ -240,6 +241,7 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
             style={{
               ['--z' as never]: `${layerZ}px`,
               ['--outgoing-offset' as never]: `${outgoingOffset}px`,
+              ['--incoming-offset' as never]: `${incomingEntranceOffset}px`,
               ['--stack' as never]: stack,
               ['--layer-blur' as never]: `${finalBlurPx}px`,
               opacity: Math.max(minVisibleOpacity, opacity),
