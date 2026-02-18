@@ -1,6 +1,5 @@
 [![npm version](https://img.shields.io/npm/v/perspective-layered-ui.svg)](https://www.npmjs.com/package/perspective-layered-ui)
 
-[![Snyk Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/huuuda-aus/layered-ui)](https://snyk.io/test/github/huuuda-aus/layered-ui)
 
 # perspective-layered-ui
 
