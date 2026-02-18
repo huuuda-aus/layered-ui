@@ -25,12 +25,7 @@
 
   transform-style: preserve-3d;
   transform: translateZ(
-    calc(
-      var(--z, 0px)
-      + var(--camera-z, 0px)
-      + var(--outgoing-offset, 0px)
-      + var(--incoming-offset, 0px)
-    )
+    calc(var(--z, 0px) + var(--camera-z, 0px) + var(--outgoing-offset, 0px))
   );
   transform-origin: 50% 50%;
   filter: blur(var(--layer-blur, 0px));

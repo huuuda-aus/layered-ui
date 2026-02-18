@@ -17,22 +17,22 @@ npm install perspective-layered-ui
 First, import the component and the required CSS:
 
 ```tsx
-import { LayeredScene } from 'perspective-layered-ui';
+import { LayeredScene, Layer } from 'perspective-layered-ui';
 import 'perspective-layered-ui/dist/perspective-layered-ui.css';
 ```
 
 Then use it in your React app:
 
 ```tsx
-import { LayeredScene } from 'perspective-layered-ui';
+import { LayeredScene, Layer } from 'perspective-layered-ui';
 import 'perspective-layered-ui/dist/perspective-layered-ui.css';
 
 function App() {
   return (
     <LayeredScene>
-      <div style={{ background: 'red', height: '100vh' }}>Layer 1</div>
-      <div style={{ background: 'green', height: '100vh' }}>Layer 2</div>
-      <div style={{ background: 'blue', height: '100vh' }}>Layer 3</div>
+      <Layer className="heroLayer" style={{ background: 'red' }}>Layer 1</Layer>
+      <Layer className="heroLayer" style={{ background: 'green' }}>Layer 2</Layer>
+      <Layer className="heroLayer" style={{ background: 'blue' }}>Layer 3</Layer>
     </LayeredScene>
   );
 }
@@ -49,6 +49,10 @@ function App() {
 - `minVisibleOpacity`: Minimum opacity for visible layers (default: 0.2).
 - `initialIndex`: Starting layer index (default: 0).
 - `disableNavigationButtons`: Disables automatic PREV/NEXT buttons (default: false).
+
+## Layer component
+
+`Layer` is exported alongside `LayeredScene` and renders a wrapper `<div>` around whatever you place inside it. It spreads any standard `HTMLDivElement` attributes, so you can pass `className`, `style`, `data-*` attributes, or refs to customize each layer without touching raw `<div>`s.
 
 ## Features
 
