@@ -6,6 +6,41 @@
   font-size: 12px;
 }
 
+.layerPanel h1,
+.layerPanel h2,
+.layerPanel h3,
+.layerPanel h4,
+.layerPanel h5,
+.layerPanel h6 {
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.layerPanel h1 {
+  font-size: 32px;
+}
+
+.layerPanel h2 {
+  font-size: 26px;
+}
+
+.layerPanel h3 {
+  font-size: 22px;
+}
+
+.layerPanel h4 {
+  font-size: 18px;
+}
+
+.layerPanel h5 {
+  font-size: 16px;
+}
+
+.layerPanel h6 {
+  font-size: 14px;
+}
+
 .layerMeta {
   display: flex;
   justify-content: space-between;
@@ -25,8 +60,10 @@
 .layerTitle {
   margin: 0;
   font-size: 20px;
-  letter-spacing: 0.02em;
+  letter-spacing: 1px;
   color: #d6d9e0;
+  font-weight: 300;
+  text-transform: uppercase;
 }
 
 .layerSubtitle {
@@ -97,8 +134,9 @@
 .layerSectionTitle {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 1px;
   color: #a2a9b8;
+  font-weight: 300;
 }
 
 .layerChart {
@@ -190,4 +228,23 @@
   color: #8b92a2;
   text-transform: uppercase;
   letter-spacing: 0.2em;
+}
+
+.testBtn {
+  appearance: none;
+  border: 1px solid rgba(170, 180, 200, 0.35);
+  background: rgba(12, 14, 20, 0.6);
+  color: #c7ccd8;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.testBtn:hover {
+  background: rgba(12, 14, 20, 0.8);
 }

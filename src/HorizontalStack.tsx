@@ -113,6 +113,10 @@ export const HorizontalStack = forwardRef<HorizontalStackRef, HorizontalStackPro
     [setClampedIndex]
   )
 
+  const maxSlideIndex = Math.max(0, slides.length - 1)
+  const isAtStart = activeIndex <= 0
+  const isAtEnd = activeIndex >= maxSlideIndex
+
   return (
     <div
       className={`horizontalStackRoot${className ? ` ${className}` : ''}`}
@@ -125,10 +129,10 @@ export const HorizontalStack = forwardRef<HorizontalStackRef, HorizontalStackPro
         <div className="horizontalStackIndicatorWrapper">
           <button
             type="button"
-            className={`horizontalStackChevron left${activeIndex <= 0 ? ' is-disabled' : ''}`}
+            className={`horizontalStackChevron left${isAtStart ? ' is-disabled' : ''}`}
             aria-label="Previous slide"
             onClick={() => setClampedIndex(activeIndexRef.current - 1)}
-            disabled={activeIndex <= 0}
+            disabled={isAtStart}
           >
             <span aria-hidden="true">‹</span>
           </button>
@@ -144,10 +148,10 @@ export const HorizontalStack = forwardRef<HorizontalStackRef, HorizontalStackPro
           </div>
           <button
             type="button"
-            className={`horizontalStackChevron right${activeIndex >= Math.max(0, slides.length - 1) ? ' is-disabled' : ''}`}
+            className={`horizontalStackChevron right${isAtEnd ? ' is-disabled' : ''}`}
             aria-label="Next slide"
             onClick={() => setClampedIndex(activeIndexRef.current + 1)}
-            disabled={activeIndex >= Math.max(0, slides.length - 1)}
+            disabled={isAtEnd}
           >
             <span aria-hidden="true">›</span>
           </button>
