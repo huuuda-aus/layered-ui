@@ -29,7 +29,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && tsc --project tsconfig.lib.json",
+    "build" : "npm run build:lib",
+    "build:lib": "tsc -b && vite build --config vite.lib.config.ts && tsc --project tsconfig.lib.json",
+    "build:site": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
