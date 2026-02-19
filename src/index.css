@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
   font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.35;
@@ -36,6 +38,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  font-family: 'Montserrat', sans-serif;
   background: radial-gradient(circle at top, rgba(18, 22, 32, 0.9), rgba(8, 10, 14, 1));
 }
 

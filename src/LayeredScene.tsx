@@ -82,7 +82,7 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   const [motionDirection, setMotionDirection] = useState<1 | -1>(1)
   const [modalPhase, setModalPhase] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed')
   const [modalAnimating, setModalAnimating] = useState(false)
-  const [blurPx, setBlurPx] = useState('0px')
+  const [blurPx, setBlurPx] = useState<string>('0px')
 
   const timeoutRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
@@ -153,25 +153,22 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
 
   useLayoutEffect(() => {
     if (modalOpen && modalPhase === 'closed') {
-      setModalPhase('opening')
-      setModalAnimating(true)
-      setBlurPx('0px')
-      requestAnimationFrame(() => setBlurPx('4px'))
+      setModalPhase('opening');
+      setBlurPx('8px');
+      setModalAnimating(true);
       setTimeout(() => {
-        setModalPhase('open')
-        setModalAnimating(false)
-      }, 300)
-    } else if (!modalOpen && modalPhase === 'open') {
-      setModalPhase('closing')
-      setModalAnimating(true)
-      setBlurPx('4px')
-      requestAnimationFrame(() => setBlurPx('0px'))
+        setModalPhase('open');
+      }, 300);
+    } else if (!modalOpen && modalPhase !== 'closed') {
+      setModalPhase('closing');
+      setBlurPx('0px');
+      setModalAnimating(true);
       setTimeout(() => {
-        setModalPhase('closed')
-        setModalAnimating(false)
-      }, 300)
+        setModalPhase('closed');
+        setModalAnimating(false);
+      }, 300);
     }
-  }, [modalOpen, modalPhase])
+  }, [modalOpen, modalPhase]);
 
   useEffect(() => {
     if (!modalOpen || !onModalClose) return
@@ -201,16 +198,16 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
 
   return (
     <div
-      className={`layeredScene ${isTransitioning ? 'is-transitioning' : ''}${modalAnimating ? ' is-modal-animating' : ''}${className ? ` ${className}` : ''}`}
+      className={`layeredScene ${isTransitioning ? 'is-transitioning' : ''}${modalAnimating ? ' is-modal-animating' : ''}${modalPhase !== 'closed' ? ' modal-blur' : ''}${className ? ` ${className}` : ''}`}
       aria-label="3D layered scene"
       style={{
-        ['--camera-z' as never]: `${cameraZ}px`,
-        ['--transition-ms' as never]: `${transitionMs}ms`,
-        ['--transition-easing' as never]: easing,
-        ['--perspective' as never]: `${perspectivePx}px`,
-        ['--blur-px' as never]: blurPx,
+        '--camera-z': `${cameraZ}px`,
+        '--blur-px': blurPx,
+        '--transition-ms': `${transitionMs}ms`,
+        '--transition-easing': easing,
+        '--perspective': `${perspectivePx}px`,
         ...style,
-      }}
+      } as React.CSSProperties}
     >
       {layers.map((node, index) => {
         const depth = Math.abs(index - activeIndex)
@@ -252,12 +249,13 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
 
         const blurPx = lerpDepth(depth, 0, blurAt1Px, blurAt2Px)
         const incomingBlurPx = blurAt2Px
+        const modalBlurPx = modalPhase !== 'closed' ? 2 : 0
         const finalBlurPx =
-          isIncoming && isAnimating && motionDirection === -1
+          (isIncoming && isAnimating && motionDirection === -1
             ? incomingPhase === 0
               ? incomingBlurPx
               : 0
-            : blurPx
+            : blurPx) + modalBlurPx
 
         const stack = 10000 - Math.round(depth * 10) + (isOutgoing ? 1000 : 0)
 
@@ -309,12 +307,128 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
       {modalPhase !== 'closed' && (
         <div className="layeredOverlay" onClick={onModalClose} />
       )}
-      {(modalPhase === 'open' || modalPhase === 'closing') && (
-        <div className="layeredModal">
-          <div className="layeredModalContent">
-            <h2>Test Popup</h2>
-            <p>This popup pushes the layered scene further from the camera in perspective.</p>
-            <button onClick={onModalClose}>Close</button>
+      {(modalPhase === 'opening' || modalPhase === 'open' || modalPhase === 'closing') && (
+        <div className="layeredModalContent" style={
+          modalPhase === 'opening' ? { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' } :
+          modalPhase === 'closing' ? { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' } : 
+          {}
+        }>
+          <button className="modalCloseBtn" onClick={onModalClose}>&times;</button>
+          <div className="layerHeader">
+            <div>
+              <h2 className="layerTitle">Test Popup</h2>
+              <p className="layerSubtitle">Interactive modal with layered UI elements</p>
+            </div>
+          </div>
+
+          <div className="modalBodyScroll">
+            <div className="layerGrid">
+              <div className="layerCard">
+                <div className="layerCardLabel">Modal Views</div>
+                <div className="layerCardValue">3 / 5</div>
+                <div className="layerCardHint">Active panels</div>
+              </div>
+              <div className="layerCard">
+                <div className="layerCardLabel">Transition Time</div>
+                <div className="layerCardValue">300ms</div>
+                <div className="layerCardHint">Linear easing</div>
+              </div>
+              <div className="layerCard">
+                <div className="layerCardLabel">Blur Level</div>
+                <div className="layerCardValue">4px</div>
+                <div className="layerCardHint">Overlay filter</div>
+              </div>
+              <div className="layerCard">
+                <div className="layerCardLabel">Camera Depth</div>
+                <div className="layerCardValue">-200px</div>
+                <div className="layerCardHint">Z-axis shift</div>
+              </div>
+            </div>
+
+            <div className="layerRow">
+              <div className="layerPanelBlock">
+                <div className="layerSectionTitle">Animation Timeline</div>
+                <svg className="layerChart" viewBox="0 0 360 120" role="img" aria-label="Animation timeline chart">
+                  <rect x="0" y="0" width="360" height="120" rx="10" />
+                  <path
+                    d="M12 100 L52 80 L92 60 L132 40 L172 20 L212 15 L252 25 L292 45 L332 50"
+                    className="layerChartLine"
+                  />
+                  <g className="layerChartDots">
+                    <circle cx="12" cy="100" r="3" />
+                    <circle cx="52" cy="80" r="3" />
+                    <circle cx="92" cy="60" r="3" />
+                    <circle cx="132" cy="40" r="3" />
+                    <circle cx="172" cy="20" r="3" />
+                    <circle cx="212" cy="15" r="3" />
+                    <circle cx="252" cy="25" r="3" />
+                    <circle cx="292" cy="45" r="3" />
+                    <circle cx="332" cy="50" r="3" />
+                  </g>
+                  <g className="layerChartGrid">
+                    <line x1="12" y1="30" x2="348" y2="30" />
+                    <line x1="12" y1="60" x2="348" y2="60" />
+                    <line x1="12" y1="90" x2="348" y2="90" />
+                  </g>
+                </svg>
+                <div className="layerTinyNote">Smooth transitions with linear interpolation</div>
+              </div>
+
+              <div className="layerPanelBlock">
+                <div className="layerSectionTitle">Modal Features</div>
+                <svg className="layerImage" viewBox="0 0 160 160" role="img" aria-label="Modal features diagram">
+                  <circle cx="80" cy="80" r="50" fill="rgba(200,205,215,0.1)" stroke="#9aa1b1" strokeOpacity="0.4" />
+                  <circle cx="80" cy="50" r="8" fill="#00b894" />
+                  <circle cx="110" cy="80" r="8" fill="#0984e3" />
+                  <circle cx="80" cy="110" r="8" fill="#e17055" />
+                  <circle cx="50" cy="80" r="8" fill="#fdcb6e" />
+                  <text x="80" y="55" textAnchor="middle" fontSize="10" fill="#c7ccd8">Blur</text>
+                  <text x="115" y="85" textAnchor="middle" fontSize="10" fill="#c7ccd8">Depth</text>
+                  <text x="80" y="115" textAnchor="middle" fontSize="10" fill="#c7ccd8">Anim</text>
+                  <text x="45" y="85" textAnchor="middle" fontSize="10" fill="#c7ccd8">Scale</text>
+                </svg>
+                <ul className="layerList">
+                  <li>Background blur effect</li>
+                  <li>Perspective depth shift</li>
+                  <li>Smooth animations</li>
+                  <li>Responsive scaling</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="layerPanelBlock">
+              <div className="layerSectionTitle">Interaction Log</div>
+              <div className="layerTable">
+                <div className="layerTableRow layerTableHead">
+                  <div>Event</div>
+                  <div>Timestamp</div>
+                  <div>Duration</div>
+                  <div>Status</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>Open Modal</div>
+                  <div>14:22:15</div>
+                  <div>300ms</div>
+                  <div>Success</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>Blur Apply</div>
+                  <div>14:22:15</div>
+                  <div>300ms</div>
+                  <div>Success</div>
+                </div>
+                <div className="layerTableRow">
+                  <div>Depth Shift</div>
+                  <div>14:22:15</div>
+                  <div>300ms</div>
+                  <div>Success</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="layerFootnote">
+              Modal system active · Westworld-inspired UI · Layered perspective effects
+            </div>
           </div>
         </div>
       )}

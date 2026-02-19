@@ -38,7 +38,8 @@
   pointer-events: none;
 }
 
-.layeredScene.is-transitioning .layeredLayer {
+.layeredScene.is-transitioning .layeredLayer,
+.layeredScene.is-modal-animating .layeredLayer {
   transition:
     transform var(--transition-ms, 250ms) var(--transition-easing, ease-out),
     filter var(--transition-ms, 250ms) var(--transition-easing, ease-out),
@@ -115,9 +116,7 @@
 .layeredOverlay {
   position: fixed;
   inset: 0;
-  background: transparent;
-  backdrop-filter: blur(var(--blur-px));
-  transition: backdrop-filter 300ms linear;
+  background: rgba(0, 0, 0, 0.1);
   z-index: 10000;
   cursor: pointer;
 }
@@ -125,34 +124,84 @@
 .layeredModal {
   position: fixed;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 10001;
   pointer-events: none;
 }
 
 .layeredModalContent {
-  background: rgba(20, 25, 35, 0.95);
-  border: 1px solid rgba(190, 200, 220, 0.2);
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 400px;
+  background: rgba(20, 30, 40, 0.8);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  width: 80vw;
+  max-height: 90vh;
+  max-width: none;
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
   pointer-events: auto;
   color: #c7ccd8;
+  overflow: hidden;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 300ms, transform 300ms;
+}
+
+.layeredModalContent.layerPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalBodyScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.modalCloseBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #c7ccd8;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.layeredModalContent ul {
+  margin: 12px 0 0 0;
+  padding-left: 20px;
+  list-style-type: disc;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .layeredModalContent h2 {
-  margin: 0 0 16px 0;
-  font-size: 20px;
+  margin: 0;
+  font-size: 16px;
   font-weight: 600;
+  background: rgba(30, 35, 45, 0.9);
+  padding: 3px 12px;
+  clip-path: polygon(0 0, calc(100% - 60px) 0, 100% 60px, 100% 100%, 0 100%);
+  border-bottom: 1px solid rgba(190, 200, 220, 0.3);
+}
+
+.layeredModalContent .modalBody {
+  background: rgba(20, 25, 35, 0.8);
 }
 
 .layeredModalContent p {
-  margin: 0 0 20px 0;
-  line-height: 1.5;
+  margin: 0;
+  line-height: 1.4;
+  font-size: 12px;
+  padding: 12px;
+  background: none;
 }
 
 .layeredModalContent button {
@@ -160,20 +209,21 @@
   border: 1px solid rgba(170, 180, 200, 0.35);
   background: rgba(12, 14, 20, 0.8);
   color: #c7ccd8;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 6px 12px;
+  border-radius: 0;
   cursor: pointer;
   font: inherit;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  margin: 0 12px 12px 12px;
 }
 
 .layeredModalContent button:hover {
   background: rgba(12, 14, 20, 0.9);
 }
 
-.layeredScene.is-modal-animating .layeredLayer {
-  transition: transform 300ms linear;
+.layeredScene.modal-blur .layeredSceneLayers {
+  filter: blur(8px);
 }
