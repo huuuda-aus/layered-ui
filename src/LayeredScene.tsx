@@ -10,6 +10,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -29,7 +30,9 @@ export type LayeredSceneProps = {
   opacityAt2?: number,
   minVisibleOpacity?: number,
   initialIndex?: number,
-  disableNavigationButtons?: boolean
+  disableNavigationButtons?: boolean,
+  modalOpen?: boolean,
+  onModalClose?: () => void,
 }
 
 export type LayeredSceneRef = {
@@ -53,6 +56,8 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   minVisibleOpacity = 0.2,
   initialIndex = 0,
   disableNavigationButtons = false,
+  modalOpen = false,
+  onModalClose,
 }, ref) => {
   const layers = useMemo(() => Children.toArray(children), [children])
 
@@ -75,6 +80,9 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   const [outgoingPhase, setOutgoingPhase] = useState<0 | 1>(1)
   const [isAnimating, setIsAnimating] = useState(false)
   const [motionDirection, setMotionDirection] = useState<1 | -1>(1)
+  const [modalPhase, setModalPhase] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed')
+  const [modalAnimating, setModalAnimating] = useState(false)
+  const [blurPx, setBlurPx] = useState('0px')
 
   const timeoutRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
@@ -143,14 +151,34 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
     setActiveIndex((prev) => Math.max(0, Math.min(layers.length - 1, prev)))
   }, [layers.length])
 
+  useLayoutEffect(() => {
+    if (modalOpen && modalPhase === 'closed') {
+      setModalPhase('opening')
+      setModalAnimating(true)
+      setBlurPx('0px')
+      requestAnimationFrame(() => setBlurPx('4px'))
+      setTimeout(() => {
+        setModalPhase('open')
+        setModalAnimating(false)
+      }, 300)
+    } else if (!modalOpen && modalPhase === 'open') {
+      setModalPhase('closing')
+      setModalAnimating(true)
+      setBlurPx('4px')
+      requestAnimationFrame(() => setBlurPx('0px'))
+      setTimeout(() => {
+        setModalPhase('closed')
+        setModalAnimating(false)
+      }, 300)
+    }
+  }, [modalOpen, modalPhase])
+
   useEffect(() => {
-    if (disableNavigationButtons) return
+    if (!modalOpen || !onModalClose) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'PageUp') {
-        goToIndex(activeIndex - 1)
-      } else if (event.key === 'PageDown') {
-        goToIndex(activeIndex + 1)
+      if (event.key === 'Escape') {
+        onModalClose()
       }
     }
 
@@ -159,7 +187,7 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [disableNavigationButtons, activeIndex, goToIndex])
+  }, [modalOpen, onModalClose])
 
   useImperativeHandle(ref, () => ({
     goToPrev: () => goToIndex(activeIndex - 1),
@@ -168,17 +196,19 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   }), [activeIndex, goToIndex])
 
   const isTransitioning = isAnimating
-  const cameraZ = depthSpacingPx * activeIndex
+  const modalDepth = modalPhase === 'opening' || modalPhase === 'open' ? -depthSpacingPx : 0
+  const cameraZ = depthSpacingPx * activeIndex + modalDepth
 
   return (
     <div
-      className={`layeredScene ${isTransitioning ? 'is-transitioning' : ''}${className ? ` ${className}` : ''}`}
+      className={`layeredScene ${isTransitioning ? 'is-transitioning' : ''}${modalAnimating ? ' is-modal-animating' : ''}${className ? ` ${className}` : ''}`}
       aria-label="3D layered scene"
       style={{
         ['--camera-z' as never]: `${cameraZ}px`,
         ['--transition-ms' as never]: `${transitionMs}ms`,
         ['--transition-easing' as never]: easing,
         ['--perspective' as never]: `${perspectivePx}px`,
+        ['--blur-px' as never]: blurPx,
         ...style,
       }}
     >
@@ -276,6 +306,18 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
           </div>
         )
       })}
+      {modalPhase !== 'closed' && (
+        <div className="layeredOverlay" onClick={onModalClose} />
+      )}
+      {(modalPhase === 'open' || modalPhase === 'closing') && (
+        <div className="layeredModal">
+          <div className="layeredModalContent">
+            <h2>Test Popup</h2>
+            <p>This popup pushes the layered scene further from the camera in perspective.</p>
+            <button onClick={onModalClose}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 })

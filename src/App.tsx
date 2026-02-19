@@ -1,12 +1,18 @@
+import { useState } from 'react'
 import { Layer, LayeredScene } from './LayeredScene'
 import { HorizontalStack, Slide } from './HorizontalStack'
 import './App.css'
 
 function App() {
   const transitionMs = 250
+  const [modalOpen, setModalOpen] = useState(false)
 
   return (
-    <LayeredScene transitionMs={transitionMs}>
+    <LayeredScene 
+      transitionMs={transitionMs} 
+      modalOpen={modalOpen} 
+      onModalClose={() => setModalOpen(false)}
+    >
       <Layer>
         <div className="layerPanel">
           <div className="layerMeta">
@@ -19,6 +25,7 @@ function App() {
               <p className="layerSubtitle">Cryogenic stack · 7Q array · 12.4 mK baseline</p>
             </div>
             <div className="layerBadge">Run 0241-A</div>
+            <button className="testBtn" onClick={() => setModalOpen(true)}>Test Popup</button>
           </div>
 
           <div className="layerGrid">

@@ -191,3 +191,22 @@
   text-transform: uppercase;
   letter-spacing: 0.2em;
 }
+
+.testBtn {
+  appearance: none;
+  border: 1px solid rgba(170, 180, 200, 0.35);
+  background: rgba(12, 14, 20, 0.6);
+  color: #c7ccd8;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.testBtn:hover {
+  background: rgba(12, 14, 20, 0.8);
+}
