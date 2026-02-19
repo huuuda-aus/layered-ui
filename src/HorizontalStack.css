@@ -99,6 +99,13 @@
   transform: translateY(-50%);
 }
 
+.horizontalStackChevron.is-disabled,
+.horizontalStackChevron:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .horizontalStackChevron span {
   line-height: 0;
   font-size: 32px;

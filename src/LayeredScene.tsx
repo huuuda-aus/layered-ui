@@ -16,6 +16,13 @@ import {
   useState,
 } from 'react'
 
+export type ModalPlacement = {
+  top?: number | string,
+  left?: number | string,
+  width?: number | string,
+  height?: number | string,
+}
+
 export type LayeredSceneProps = {
   children: ReactNode,
   className?: string,
@@ -33,6 +40,8 @@ export type LayeredSceneProps = {
   disableNavigationButtons?: boolean,
   modalOpen?: boolean,
   onModalClose?: () => void,
+  modalOrigin?: { x: number, y: number },
+  modalPlacement?: ModalPlacement,
 }
 
 export type LayeredSceneRef = {
@@ -58,6 +67,8 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   disableNavigationButtons = false,
   modalOpen = false,
   onModalClose,
+  modalOrigin,
+  modalPlacement,
 }, ref) => {
   const layers = useMemo(() => Children.toArray(children), [children])
 
@@ -196,6 +207,48 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
   const modalDepth = modalPhase === 'opening' || modalPhase === 'open' ? -depthSpacingPx : 0
   const cameraZ = depthSpacingPx * activeIndex + modalDepth
 
+  const getModalTransform = (phase: 'opening' | 'closing' | 'open') => {
+    if (!modalOrigin) {
+      return phase === 'closing' ? 'translate(-50%, -50%) scale(0.5)' : ''
+    }
+    const centerX = window.innerWidth / 2
+    const centerY = window.innerHeight / 2
+    const offsetX = modalOrigin.x - centerX
+    const offsetY = modalOrigin.y - centerY
+    const originTransform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) scale(0.5)`
+    return (phase === 'opening' || phase === 'closing') ? originTransform : ''
+  }
+
+  const getModalPlacementStyle = (placement?: ModalPlacement): CSSProperties | undefined => {
+    if (!placement) return undefined
+    const style: CSSProperties = {}
+    if (placement.top !== undefined) style.top = placement.top
+    if (placement.left !== undefined) style.left = placement.left
+    if (placement.width !== undefined) style.width = placement.width
+    if (placement.height !== undefined) style.height = placement.height
+    return style
+  }
+
+  const modalPlacementStyle = getModalPlacementStyle(modalPlacement)
+  const hasCustomPlacement = Boolean(modalPlacement)
+  const baseModalPositionStyle: CSSProperties = hasCustomPlacement
+    ? { transform: 'none' }
+    : { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
+  const modalPhaseStyle: CSSProperties = modalPhase === 'opening'
+    ? hasCustomPlacement
+      ? { opacity: 0 }
+      : { opacity: 0, transform: getModalTransform('opening') }
+    : modalPhase === 'closing'
+      ? hasCustomPlacement
+        ? { opacity: 0 }
+        : { opacity: 0, transform: getModalTransform('closing') }
+      : {}
+  const modalStyle: CSSProperties = {
+    ...baseModalPositionStyle,
+    ...(modalPlacementStyle ?? {}),
+    ...modalPhaseStyle,
+  }
+
   return (
     <div
       className={`layeredScene ${isTransitioning ? 'is-transitioning' : ''}${modalAnimating ? ' is-modal-animating' : ''}${modalPhase !== 'closed' ? ' modal-blur' : ''}${className ? ` ${className}` : ''}`}
@@ -308,11 +361,7 @@ export const LayeredScene = forwardRef<LayeredSceneRef, LayeredSceneProps>(({
         <div className="layeredOverlay" onClick={onModalClose} />
       )}
       {(modalPhase === 'opening' || modalPhase === 'open' || modalPhase === 'closing') && (
-        <div className="layeredModalContent" style={
-          modalPhase === 'opening' ? { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' } :
-          modalPhase === 'closing' ? { opacity: 0, transform: 'translate(-50%, -50%) scale(0.5)' } : 
-          {}
-        }>
+        <div className="layeredModalContent" style={modalStyle}>
           <button className="modalCloseBtn" onClick={onModalClose}>&times;</button>
           <div className="layerHeader">
             <div>

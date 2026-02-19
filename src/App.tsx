@@ -3,6 +3,13 @@ import { Layer, LayeredScene } from './LayeredScene'
 import { HorizontalStack, Slide } from './HorizontalStack'
 import './App.css'
 
+const testPopupPlacement = {
+  top: '10%',
+  left: '50%',
+  width: '35%',
+  height: '70%',
+}
+
 function App() {
   const transitionMs = 250
   const [modalOpen, setModalOpen] = useState(false)
@@ -12,6 +19,7 @@ function App() {
       transitionMs={transitionMs} 
       modalOpen={modalOpen} 
       onModalClose={() => setModalOpen(false)}
+      modalPlacement={testPopupPlacement}
     >
       <Layer>
         <div className="layerPanel">
