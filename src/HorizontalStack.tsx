@@ -121,6 +121,38 @@ export const HorizontalStack = forwardRef<HorizontalStackRef, HorizontalStackPro
         ...style,
       }}
     >
+      <div className="horizontalStackIndicators">
+        <div className="horizontalStackIndicatorWrapper">
+          <button
+            type="button"
+            className={`horizontalStackChevron left${activeIndex <= 0 ? ' is-disabled' : ''}`}
+            aria-label="Previous slide"
+            onClick={() => setClampedIndex(activeIndexRef.current - 1)}
+            disabled={activeIndex <= 0}
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+          <div className="horizontalStackDots" role="tablist" aria-label="Slide navigation">
+            {slides.map((_, index) => (
+              <span
+                key={index}
+                className={`horizontalStackDot${index === activeIndex ? ' is-active' : ''}`}
+                aria-selected={index === activeIndex}
+                role="tab"
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            className={`horizontalStackChevron right${activeIndex >= Math.max(0, slides.length - 1) ? ' is-disabled' : ''}`}
+            aria-label="Next slide"
+            onClick={() => setClampedIndex(activeIndexRef.current + 1)}
+            disabled={activeIndex >= Math.max(0, slides.length - 1)}
+          >
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
       <div
         className="horizontalStackViewport"
         ref={containerRef}
@@ -177,36 +209,6 @@ export const HorizontalStack = forwardRef<HorizontalStackRef, HorizontalStackPro
             )
           })}
         </div>
-      </div>
-      <div className="horizontalStackIndicators">
-        <button
-          type="button"
-          className={`horizontalStackChevron left${activeIndex <= 0 ? ' is-disabled' : ''}`}
-          aria-label="Previous slide"
-          onClick={() => setClampedIndex(activeIndexRef.current - 1)}
-          disabled={activeIndex <= 0}
-        >
-          <span aria-hidden="true">‹</span>
-        </button>
-        <div className="horizontalStackDots" role="tablist" aria-label="Slide navigation">
-          {slides.map((_, index) => (
-            <span
-              key={index}
-              className={`horizontalStackDot${index === activeIndex ? ' is-active' : ''}`}
-              aria-selected={index === activeIndex}
-              role="tab"
-            />
-          ))}
-        </div>
-        <button
-          type="button"
-          className={`horizontalStackChevron right${activeIndex >= Math.max(0, slides.length - 1) ? ' is-disabled' : ''}`}
-          aria-label="Next slide"
-          onClick={() => setClampedIndex(activeIndexRef.current + 1)}
-          disabled={activeIndex >= Math.max(0, slides.length - 1)}
-        >
-          <span aria-hidden="true">›</span>
-        </button>
       </div>
     </div>
   )

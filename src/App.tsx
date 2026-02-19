@@ -215,7 +215,6 @@ function App() {
           </div>
 
           <div className="layerPanelBlock">
-            <div className="layerSectionTitle">Sweep Highlights</div>
             <HorizontalStack gap={32} className="layerCarousel">
               <Slide>
                 <div className="layerCarouselSlide">

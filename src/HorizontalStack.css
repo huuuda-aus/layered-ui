@@ -60,42 +60,32 @@
 
 .horizontalStackIndicators {
   position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  align-items: center;
-  justify-items: center;
-  padding: 12px 20px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 35px;
+  display: flex;
+  justify-content: center;
   pointer-events: none;
 }
 
-.horizontalStackControlBtn {
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
-  color: inherit;
+.horizontalStackIndicatorWrapper {
+  position: relative;
+  width: 100%;
   border-radius: 999px;
-  padding: 10px 22px;
-  cursor: pointer;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  transition: background 200ms ease, transform 200ms ease;
-}
-
-.horizontalStackControlBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.horizontalStackControlBtn:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
+  padding: 0 24px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .horizontalStackChevron {
   pointer-events: auto;
   font-size: 20px;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border: 0;
   display: flex;
   align-items: center;
@@ -104,36 +94,127 @@
   color: #fff;
   opacity: 0.85;
   transition: transform 200ms ease, opacity 200ms ease;
-  grid-column: 1 / 2;
-}
-
-.horizontalStackChevron.is-disabled {
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.horizontalStackChevron:hover:not(.is-disabled) {
-  transform: translateY(-2px);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .horizontalStackChevron span {
   line-height: 0;
+  font-size: 32px;
+  font-weight: 600;
+  display: inline-block;
+  animation: none;
+  position: relative;
+}
+
+.horizontalStackChevron:hover span {
+  animation: chevronSlideRight 0.75s ease-out infinite;
+}
+
+.horizontalStackChevron.left:hover span {
+  animation: chevronSlideLeft 0.75s ease-out infinite;
+}
+
+.horizontalStackChevron span::after {
+  content: attr(data-chevron);
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+  opacity: 0;
+  transform: scale(1);
+  pointer-events: none;
+}
+
+.horizontalStackChevron:hover span::after {
+  animation: chevronExplosion 0.75s ease-out infinite;
+}
+
+@keyframes chevronSlideRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  40% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  41% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  80% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes chevronExplosion {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  35% {
+    opacity: 0.6;
+    transform: scale(2.3);
+  }
+  60% {
+    opacity: 0.2;
+    transform: scale(2.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3);
+  }
+}
+
+@keyframes chevronSlideLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  40% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  41% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  80% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .horizontalStackChevron.left {
-  grid-column: 1;
+  left: 0;
 }
 
 .horizontalStackChevron.right {
-  grid-column: 3;
+  right: 0;
 }
 
 .horizontalStackDots {
-  grid-column: 2;
   display: flex;
   gap: 8px;
   justify-content: center;
   pointer-events: none;
+  height: 35px;
+  align-items: center;
 }
 
 .horizontalStackDot {
